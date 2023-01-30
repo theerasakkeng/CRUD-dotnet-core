@@ -1,0 +1,3 @@
+Server=localhost,1433;Database=TestDB;User Id=sa;Password=Keng1234;"
+
+dotnet-ef dbcontext scaffold "Server=localhost,1433;Database=TestDB;User id=sa;Password=Keng1234" Microsoft.EntityFrameworkCore.SqlServer --output-dir ModelsDB --context DB_Context --use-database-names -t brands -t categories -t products -t stocks -t customers -t order_items -t orders -t staffs -t stores --project CRUDTest --force
