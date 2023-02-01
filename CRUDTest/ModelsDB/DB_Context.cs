@@ -26,15 +26,16 @@ namespace CRUDTest.ModelsDB
         public virtual DbSet<staff> staffs { get; set; }
         public virtual DbSet<stock> stocks { get; set; }
         public virtual DbSet<store> stores { get; set; }
+        public virtual DbSet<res_customer_list> res_customer_list { get; set; }
 
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//        {
-//            if (!optionsBuilder.IsConfigured)
-//            {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//                optionsBuilder.UseSqlServer("Server=localhost,1433;Database=TestDB;User id=sa;Password=Keng1234");
-//            }
-//        }
+        //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //        {
+        //            if (!optionsBuilder.IsConfigured)
+        //            {
+        //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        //                optionsBuilder.UseSqlServer("Server=localhost,1433;Database=TestDB;User id=sa;Password=Keng1234");
+        //            }
+        //        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -280,6 +281,20 @@ namespace CRUDTest.ModelsDB
                 entity.Property(e => e.zip_code)
                     .HasMaxLength(5)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<res_customer_list>(entity =>
+            {
+                entity.HasNoKey();
+                entity.Property(e => e.customer_id);
+                entity.Property(e => e.city);
+                entity.Property(e => e.email);
+                entity.Property(e => e.first_name);
+                entity.Property(e => e.last_name);
+                entity.Property(e => e.phone);
+                entity.Property(e => e.state);
+                entity.Property(e => e.street);
+                entity.Property(e => e.zip_code);
             });
 
             OnModelCreatingPartial(modelBuilder);
