@@ -18,33 +18,33 @@ namespace CRUDTest.Areas.Controllers
         {
             this.db_context = context;
         }
-        [HttpGet]
-        [Route("GetCustomerList")]
-        public IActionResult GetCustomerList(int? start, int? limit)
-        {
-            object Data = null;
-            try
-            {
-                List<customer> customer_list = db_context.customers.ToList();
-                int total = customer_list.Count();
-                var skip = limit * (start - 1);
-                var data_pay = customer_list.Select(o => o).Skip((int)skip).Take((int)limit).ToArray();
-                Data = new
-                {
-                    status = "success",
-                    data = new
-                    {
-                        total= total,
-                        activity_list = data_pay,
-                    },
-                };
-            }
-            catch
-            {
-                throw;
-            }
-            return Ok(Data);
-        }
+        //[HttpGet]
+        //[Route("GetCustomerList")]
+        //public IActionResult GetCustomerList(int? start, int? limit)
+        //{
+        //    object Data = null;
+        //    try
+        //    {
+        //        List<customer> customer_list = db_context.customers.ToList();
+        //        int total = customer_list.Count();
+        //        var skip = limit * (start - 1);
+        //        var data_pay = customer_list.Select(o => o).Skip((int)skip).Take((int)limit).ToArray();
+        //        Data = new
+        //        {
+        //            status = "success",
+        //            data = new
+        //            {
+        //                total= total,
+        //                activity_list = data_pay,
+        //            },
+        //        };
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //    return Ok(Data);
+        //}
         [HttpPost]
         [Route("InsertCustomer")]
         public IActionResult InsertCustomer([FromBody]customer req)
@@ -91,6 +91,26 @@ namespace CRUDTest.Areas.Controllers
                 }
                 db_context.customers.Update(customer_data);
                 db_context.SaveChanges();
+                Data = new
+                {
+                    status = "success",
+                    data = customer_data
+                };
+            }
+            catch
+            {
+                throw;
+            }
+            return Ok(Data);
+        }
+        [HttpGet]
+        [Route("GetCustomerDetail")]
+        public IActionResult GetCustomerDetail(int customer_id)
+        {
+            object Data = null;
+            try
+            {
+                var customer_data = db_context.customers.Where(o => o.customer_id == customer_id).FirstOrDefault();
                 Data = new
                 {
                     status = "success",

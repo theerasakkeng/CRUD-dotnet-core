@@ -22,10 +22,17 @@ namespace CRUDTest.Areas.BackOffice.Controller
 
         [HttpGet]
         [Route("GetCustomerList")]
-        public IActionResult GetCustomerListAsync(int? page= 1, int? limit= 10)
+        public IActionResult GetCustomerListAsync(string? search, int? page= 1, int? limit= 10)
         {
             object Data = null;
             var param = new SqlParameter[] {
+                        new SqlParameter() {
+                            ParameterName = "@search",
+                            SqlDbType =  System.Data.SqlDbType.NVarChar,
+                            Size = 250,
+                            Direction = System.Data.ParameterDirection.Input,
+                            Value = search
+                        },
                         new SqlParameter() {
                             ParameterName = "@page",
                             SqlDbType =  System.Data.SqlDbType.Int,
@@ -43,18 +50,25 @@ namespace CRUDTest.Areas.BackOffice.Controller
                             ParameterName = "@TotalRecord",
                             SqlDbType =  System.Data.SqlDbType.Int,
                             Direction = System.Data.ParameterDirection.Output,
+                        },
+                        new SqlParameter() {
+                            ParameterName = "@TotalFilterRecord",
+                            SqlDbType =  System.Data.SqlDbType.Int,
+                            Direction = System.Data.ParameterDirection.Output,
                         }
             };
             try
             {
-                var customer_list = db_context.Set<res_customer_list>().FromSqlRaw("EXEC [dbo].[sp_customer_list] @page,@limit,@TotalRecord OUTPUT", param).ToList();
-                int total = Convert.ToInt32(param[2].Value);
+                var customer_list = db_context.Set<res_customer_list>().FromSqlRaw("EXEC [dbo].[sp_customer_list] @search,@page,@limit,@TotalRecord OUTPUT,@TotalFilterRecord OUTPUT", param).ToList();
+                int total = Convert.ToInt32(param[3].Value);
+                int total_filter = Convert.ToInt32(param[4].Value);
                 Data = new
                 {
                     status = "success",
                     data = new
                     {
                         total_records = total,
+                        total_filter = total_filter,
                         customer_list = customer_list,
                     },
                 };
