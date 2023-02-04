@@ -22,16 +22,18 @@ namespace CRUDTest.Areas.BackOffice.Controller
 
         [HttpGet]
         [Route("GetCustomerList")]
-        public IActionResult GetCustomerListAsync(string? search, int? page= 1, int? limit= 10)
+        public IActionResult GetCustomerListAsync(string search, int? page= 1, int? limit= 10)
         {
-            object Data = null;
-            var param = new SqlParameter[] {
+            object Data;
+            try
+            {  
+                    var param = new SqlParameter[] {
                         new SqlParameter() {
                             ParameterName = "@search",
                             SqlDbType =  System.Data.SqlDbType.NVarChar,
                             Size = 250,
                             Direction = System.Data.ParameterDirection.Input,
-                            Value = search
+                            Value = (search == null) ? "%" : search
                         },
                         new SqlParameter() {
                             ParameterName = "@page",
@@ -56,12 +58,10 @@ namespace CRUDTest.Areas.BackOffice.Controller
                             SqlDbType =  System.Data.SqlDbType.Int,
                             Direction = System.Data.ParameterDirection.Output,
                         }
-            };
-            try
-            {
-                var customer_list = db_context.Set<res_customer_list>().FromSqlRaw("EXEC [dbo].[sp_customer_list] @search,@page,@limit,@TotalRecord OUTPUT,@TotalFilterRecord OUTPUT", param).ToList();
-                int total = Convert.ToInt32(param[3].Value);
-                int total_filter = Convert.ToInt32(param[4].Value);
+                    };
+                   dynamic customer_list = db_context.Set<res_customer_list>().FromSqlRaw("EXEC [dbo].[sp_customer_list] @search,@page,@limit,@TotalRecord OUTPUT,@TotalFilterRecord OUTPUT", param).ToList();
+                   int total = Convert.ToInt32(param[3].Value);
+                   int  total_filter = Convert.ToInt32(param[4].Value);
                 Data = new
                 {
                     status = "success",
@@ -73,9 +73,9 @@ namespace CRUDTest.Areas.BackOffice.Controller
                     },
                 };
             }
-            catch
+            catch(Exception ex)
             {
-                throw;
+                throw(ex);
             }
             return Ok(Data);
         }
