@@ -26,6 +26,7 @@ namespace CRUDTest.ModelsDB
         public virtual DbSet<staff> staffs { get; set; }
         public virtual DbSet<stock> stocks { get; set; }
         public virtual DbSet<store> stores { get; set; }
+        public virtual DbSet<user_login> user_logins { get; set; }
         public virtual DbSet<res_customer_list> res_customer_list { get; set; }
 
         //        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -281,6 +282,26 @@ namespace CRUDTest.ModelsDB
                 entity.Property(e => e.zip_code)
                     .HasMaxLength(5)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<user_login>(entity =>
+            {
+                entity.HasKey(e => e.user_id)
+                    .HasName("PK_user.login");
+
+                entity.ToTable("user_login");
+
+                entity.Property(e => e.created_time).HasColumnType("datetime");
+
+                entity.Property(e => e.password).IsRequired();
+
+                entity.Property(e => e.salt_key)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.user_name)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<res_customer_list>(entity =>
