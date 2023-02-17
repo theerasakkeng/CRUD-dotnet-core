@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CRUDTest.Areas.Api.Controllers
@@ -33,13 +34,13 @@ namespace CRUDTest.Areas.Api.Controllers
                 if(data_user == null)
                 {
                     string salt_key = GenerateSalt(20);
-                    byte[] passwordHash = HashPasswordWithSalt(req.password, salt_key);
+                    string passwordHash = HashPasswordWithSalt(req.password, salt_key);
 
                     user_login user_data = new user_login();
                     {
                         user_data.user_name = username.Trim();
                         user_data.salt_key = salt_key;
-                        user_data.password = BitConverter.ToString(passwordHash);
+                        user_data.password = passwordHash;
                         user_data.created_time = txTimeStamp;
                     }
                     db_context.user_logins.Add(user_data);
@@ -48,8 +49,8 @@ namespace CRUDTest.Areas.Api.Controllers
                     Data = new
                     {
                         status = "success",
-                        data = "register success"
-                    };
+                        data = passwordHash
+                };
 
                     static String GenerateSalt(int length)
                     {
@@ -64,20 +65,29 @@ namespace CRUDTest.Areas.Api.Controllers
                         return salt;
                     }
 
-                    static byte[] HashPasswordWithSalt(string password, string salt)
+                    //static byte[] HashPasswordWithSalt(string password, string salt)
+                    //{
+                    //    using (var sha256 = SHA256.Create())
+                    //    {
+                    //        byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(password);
+                    //        byte[] saltBytes = System.Text.Encoding.UTF8.GetBytes(salt);
+                    //        byte[] passwordAndSalt = new byte[passwordBytes.Length + saltBytes.Length];
+                    //        Array.Copy(passwordBytes, passwordAndSalt, passwordBytes.Length);
+                    //        Array.Copy(saltBytes, 0, passwordAndSalt, passwordBytes.Length, salt.Length);
+                    //        return sha256.ComputeHash(passwordAndSalt);
+                    //    }
+                    //}
+
+                    static string HashPasswordWithSalt(string password, string salt)
                     {
                         using (var sha256 = SHA256.Create())
                         {
-                            List<int> data = new List<int>();
-                            byte[] passwordBytes = System.Text.Encoding.UTF8.GetBytes(password);
-                            byte[] saltBytes = System.Text.Encoding.UTF8.GetBytes(salt);
-                            byte[] passwordAndSalt = new byte[passwordBytes.Length + saltBytes.Length];
-                            Array.Copy(passwordBytes, passwordAndSalt, passwordBytes.Length);
-                            Array.Copy(saltBytes, 0, passwordAndSalt, passwordBytes.Length, salt.Length);
-                            return sha256.ComputeHash(passwordAndSalt);
+                            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password + salt));
+                            return Convert.ToBase64String(hashBytes);
                         }
                     }
-                }else
+                }
+                else
                 {
                     Data = new
                     {
